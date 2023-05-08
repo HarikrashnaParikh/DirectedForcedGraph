@@ -34,6 +34,10 @@
   ::ng-deep path.link.hidden {
     stroke-width: 0;
   }
+  ::ng-deep circle.node.hidden{
+    display: none;
+  }
+
   
   ::ng-deep circle.node {
     stroke-width: 1.5px;
