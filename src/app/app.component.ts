@@ -22,7 +22,7 @@ export class AppComponent {
   circle: any;
   drag: any;
   dragLine: any;
-  isNodeSelected = false;
+  // isNodeSelected = false;
 
   // mouse event vars
   selectedNode = null;
@@ -36,10 +36,9 @@ export class AppComponent {
   lastKeyDown = -1;
 
   nodes = [
-    { id: 0, reflexive: true, children: 2 },
+    { id: 0, reflexive: true, children: 2, isOpen: false, parentID: null,child:[] },
   ];
-  links = [
-  ];
+  links = [];
 
   ngAfterContentInit() {
     const rect = this.graphContainer.nativeElement.getBoundingClientRect();
@@ -236,13 +235,10 @@ export class AppComponent {
         this.selectedNode =
           this.mousedownNode === this.selectedNode ? null : this.mousedownNode;
         console.log("node selected : id = " + this.selectedNode.id);
-        if (!this.isNodeSelected) {
-              this.isChild(this.selectedNode);
-              this.isNodeSelected = !this.isNodeSelected
-            } else {
-              console.log("in else  vgfgfbdfnvb")
-              this.closeChild(this.selectedNode);
-              this.isNodeSelected = !this.isNodeSelected
+        if (this.selectedNode.isOpen === false) {
+          this.isChild(this.selectedNode);
+        } else {
+          this.closeChild(this.selectedNode);
         }
 
         this.selectedLink = null;
@@ -376,38 +372,52 @@ export class AppComponent {
   }
 
   isChild(selectedNode: any) {
-    console.log(this.isNodeSelected);
-    // this.isNodeSelected = !this.isNodeSelected;
     if (selectedNode.children > 0) {
-      // this.isNodeSelected = !this.isNodeSelected;
-      console.log("HEHEHEHEHHHEHEHEHEHEH in the if block of isChild");
+      this.selectedNode.isOpen = true;
+      let parentID = this.selectedNode.id;
       for (let i = 0; i < selectedNode.children; i++) {
-        const node = { id: ++this.lastNodeId, reflexive: false, children: 0 };
+        this.selectedNode.child[i]=this.lastNodeId+1;
+        const node = {
+          id: ++this.lastNodeId,
+          reflexive: false,
+          children: 2,
+          isOpen: false,
+          parentID: parentID,
+          child: []
+        };
         this.nodes.push(node);
         const source = selectedNode.id;
         const target = node.id;
         // const link = this.links.filter((l) => l.source === selectedNode.id && l.target === node.id)[0];
+        console.log("links"+  this.links);
         this.links.push({ source, target, right: true });
       }
+      console.log(
+        "Hello  this is a array of node" + JSON.stringify(this.nodes)
+      );
     } else {
-
-      console.log("LELELELELELELELELELELE in the else block of isChild");
-
       console.log("This node is child node ");
     }
   }
 
-  closeChild(selectedNode:any){
-
-      // selectedNode.children = 0;
-      for(let i = 0; i < selectedNode.children; i++){
-      this.nodes.pop();
-      this.links.pop();
+  closeChild(selectedNode: any) { 
+    console.log(this.links);
+    this.selectedNode.isOpen = false;
+    
+    // selectedNode.children = 0;
+    for(let i=0; i<this.nodes.length; i++) {
+      this.nodes=this.nodes.filter(item => !(this.nodes[i].id === selectedNode.parentID));
+      // this.links=this.links.filter(item => !(this.));
+      // this.selectedNode.child.pop();
+     // this.nodes.pop();
+      // this.links.pop();
       this.lastNodeId -= 1;
-      }
+    }
+    console.log(
+      "Hello  this is a array of node" + JSON.stringify(this.nodes)
+    );
   }
-
-
+  
   keyup() {
     this.lastKeyDown = -1;
 
