@@ -378,6 +378,7 @@ export class AppComponent {
   }
 
   isChild(selectedNode: any) {
+    console.log("Start of isChild Function");
     if (selectedNode.children > 0) {
       this.selectedNode.isOpen = true;
       // let parentID = this.selectedNode.id;
@@ -400,44 +401,51 @@ export class AppComponent {
         // const link = this.links.filter((l) => l.source === selectedNode.id && l.target === node.id)[0];
         this.links.push({ source, target, right: true, parentId });
       }
-      // console.log(
-      //   "Hello  this is a array of node" + JSON.stringify(this.nodes)
-      // );
+      console.log("this is array  of nodes......" + JSON.stringify(this.nodes));
+      console.log("this is array  of links......" + JSON.stringify(this.links));
     } else {
-      console.log(
-        "This node has no further child node.  the endddddddddddddd "
-      );
+      console.log("This node has no further child node.  the endddddddddddddd");
     }
+    console.log("EEEEEnd of isChild function");
   }
+
+  //closeChild Function will closs selected node's all childs
   closeChild(selectedNode: any) {
-    console.log("Hari dsjhsvgfjdsvf");
+    console.log("SSSSSstart of closeChild");
     this.selectedNode.isOpen = false;
     //closing nodes
     const indexesOfNodes = this.nodes.reduce((acc, element, index) => {
-      if (element.parent === 0) {
+      if (element.parent === selectedNode.id) {
+        if(element.child.length>0){
+          this.closeChild(element);
+        }
         acc.push(index);
       }
       return acc;
     }, []);
-    console.log("Hehehheh..." + indexesOfNodes);
+    console.log("node to be closed..." + indexesOfNodes);
     for (let i = indexesOfNodes.length - 1; i >= 0; i--) {
-      console.log("Hello");
       this.nodes.splice(indexesOfNodes[i], 1);
+      this.selectedNode.child.pop();
       this.lastNodeId -= 1;
     }
     //closing links
     const indexesOfLinks = this.links.reduce((acc, element, index) => {
-      if (element.parentId === 0) {
+      if (element.parentId === selectedNode.id) {
         acc.push(index);
       }
       return acc;
     }, []);
 
-    console.log("Hehehheh..." + indexesOfLinks);
+    console.log("Link to be closed..." + indexesOfLinks);
     for (let i = indexesOfLinks.length - 1; i >= 0; i--) {
-      console.log("Hello");
       this.links.splice(indexesOfLinks[i], 1);
+      
     }
+
+    console.log("this is array  of nodes......" + JSON.stringify(this.nodes));
+    console.log("this is array  of links......" + JSON.stringify(this.links));
+    console.log("EEEEEnd of closeChild   function");
   }
   keyup() {
     this.lastKeyDown = -1;
