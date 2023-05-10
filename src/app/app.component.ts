@@ -36,7 +36,14 @@ export class AppComponent {
   lastKeyDown = -1;
 
   nodes = [
-    { id: 0, reflexive: true, children: 2, isOpen: false, parentID: null,child:[] },
+    {
+      id: 0,
+      reflexive: true,
+      children: 2,
+      isOpen: false,
+      child: [],
+      parent: null,
+    },
   ];
   links = [];
 
@@ -254,7 +261,6 @@ export class AppComponent {
         this.restart();
       })
       .on("mouseup", (dataItem: any) => {
-        debugger;
         if (!this.mousedownNode) return;
 
         // needed by FF
@@ -374,50 +380,65 @@ export class AppComponent {
   isChild(selectedNode: any) {
     if (selectedNode.children > 0) {
       this.selectedNode.isOpen = true;
-      let parentID = this.selectedNode.id;
+      // let parentID = this.selectedNode.id;
       for (let i = 0; i < selectedNode.children; i++) {
-        this.selectedNode.child[i]=this.lastNodeId+1;
+        this.selectedNode.child[i] = this.lastNodeId + 1;
         const node = {
           id: ++this.lastNodeId,
           reflexive: false,
           children: 2,
           isOpen: false,
-          parentID: parentID,
-          child: []
+          // parentID: parentID,
+          child: [],
+          parent: selectedNode.id,
         };
+        // console.log("argusssss"+JSON.stringify(node));
         this.nodes.push(node);
         const source = selectedNode.id;
         const target = node.id;
+        const parentId: number = selectedNode.id;
         // const link = this.links.filter((l) => l.source === selectedNode.id && l.target === node.id)[0];
-        console.log("links"+  this.links);
-        this.links.push({ source, target, right: true });
+        this.links.push({ source, target, right: true, parentId });
       }
-      console.log(
-        "Hello  this is a array of node" + JSON.stringify(this.nodes)
-      );
+      // console.log(
+      //   "Hello  this is a array of node" + JSON.stringify(this.nodes)
+      // );
     } else {
-      console.log("This node is child node ");
+      console.log(
+        "This node has no further child node.  the endddddddddddddd "
+      );
     }
   }
-
-  closeChild(selectedNode: any) { 
-    console.log(this.links);
+  closeChild(selectedNode: any) {
+    console.log("Hari dsjhsvgfjdsvf");
     this.selectedNode.isOpen = false;
-    
-    // selectedNode.children = 0;
-    for(let i=0; i<this.nodes.length; i++) {
-      this.nodes=this.nodes.filter(item => !(this.nodes[i].id === selectedNode.parentID));
-      // this.links=this.links.filter(item => !(this.));
-      // this.selectedNode.child.pop();
-     // this.nodes.pop();
-      // this.links.pop();
+    //closing nodes
+    const indexesOfNodes = this.nodes.reduce((acc, element, index) => {
+      if (element.parent === 0) {
+        acc.push(index);
+      }
+      return acc;
+    }, []);
+    console.log("Hehehheh..." + indexesOfNodes);
+    for (let i = indexesOfNodes.length - 1; i >= 0; i--) {
+      console.log("Hello");
+      this.nodes.splice(indexesOfNodes[i], 1);
       this.lastNodeId -= 1;
     }
-    console.log(
-      "Hello  this is a array of node" + JSON.stringify(this.nodes)
-    );
+    //closing links
+    const indexesOfLinks = this.links.reduce((acc, element, index) => {
+      if (element.parentId === 0) {
+        acc.push(index);
+      }
+      return acc;
+    }, []);
+
+    console.log("Hehehheh..." + indexesOfLinks);
+    for (let i = indexesOfLinks.length - 1; i >= 0; i--) {
+      console.log("Hello");
+      this.links.splice(indexesOfLinks[i], 1);
+    }
   }
-  
   keyup() {
     this.lastKeyDown = -1;
 
